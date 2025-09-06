@@ -1,4 +1,37 @@
-// This file is intentionally left blank.
+// --- Pre-defined Users ---
+const ADMIN_USERS = [
+    { username: 'admin1', password: 'admin123', name: 'Admin One' },
+    { username: 'admin2', password: 'admin123', name: 'Admin Two' },
+    { username: 'admin3', password: 'admin123', name: 'Admin Three' }
+];
+
+const STUDENT_USERS = [
+    { username: '0221-1001', password: 'student123', name: 'John Doe', course: 'IT', year: '3', major: 'WMAD', section: 'A' },
+    { username: '0222-1002', password: 'student123', name: 'Jane Smith', course: 'CS', year: '2', major: '', section: 'B' }
+];
+
+// Initialize users on first load
+function initializeUsers() {
+    let students = JSON.parse(localStorage.getItem('students') || '[]');
+    
+    // Add predefined students if they don't exist
+    STUDENT_USERS.forEach(user => {
+        if (!students.find(s => s.sn === user.username)) {
+            students.push({
+                sn: user.username,
+                name: user.name,
+                course: user.course,
+                year: user.year,
+                major: user.major,
+                section: user.section,
+                requirements: {},
+                clearance: false
+            });
+        }
+    });
+    
+    localStorage.setItem('students', JSON.stringify(students));
+}
 function hideAllSections() {
     document.getElementById('login-page').style.display = 'none';
     document.getElementById('register-page').style.display = 'none';
