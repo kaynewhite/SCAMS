@@ -1,0 +1,180 @@
+.student-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.student-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-blue);
+    font-size: 2.5rem;
+}
+
+.requirements-container {
+    margin: 2rem 0;
+}
+
+.requirement-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
+    margin-bottom: 0.5rem;
+    border-left: 4px solid var(--border-light);
+    transition: var(--transition);
+}
+
+.requirement-item.completed {
+    border-left-color: var(--success-green);
+    background: #d4edda;
+}
+
+.requirement-item input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    transform: scale(1.2);
+}
+
+.requirement-item label {
+    margin: 0;
+    cursor: not-allowed;
+    user-select: none;
+}
+
+.clearance-status {
+    text-align: center;
+    padding: 2rem;
+    margin: 2rem 0;
+    border-radius: var(--border-radius);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.clearance-status.completed {
+    background: #d4edda;
+    color: var(--success-green);
+    border: 2px solid var(--success-green);
+}
+
+.clearance-status.pending {
+    background: #f8d7da;
+    color: var(--danger-red);
+    border: 2px solid var(--danger-red);
+}
+
+/* Printable Clearance Template */
+.clearance-template {
+    background: white;
+    padding: 2rem;
+    border: 2px solid var(--primary-blue);
+    border-radius: var(--border-radius);
+    margin: 2rem 0;
+}
+
+.clearance-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--primary-blue);
+}
+
+.clearance-header h3 {
+    color: var(--primary-blue);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.clearance-body {
+    margin: 2rem 0;
+}
+
+.clearance-body h4 {
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+}
+
+#completed-req-list {
+    list-style: none;
+    padding: 0;
+}
+
+#completed-req-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+#completed-req-list li:before {
+    content: "✓ ";
+    color: var(--success-green);
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.signature-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--primary-blue);
+}
+
+.signature-section h4 {
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+}
+
+#signature-template-display {
+    min-height: 100px;
+    border: 2px dashed var(--border-light);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dark);
+    font-style: italic;
+}
+
+#signature-template-display img {
+    max-width: 100%;
+    max-height: 150px;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+    }
+    
+    header, footer, .btn-primary, .btn-success {
+        display: none !important;
+    }
+    
+    .clearance-template {
+        border: 2px solid black;
+        box-shadow: none;
+        page-break-inside: avoid;
+    }
+    
+    .clearance-header h3 {
+        color: black;
+    }
+    
+    .clearance-body h4,
+    .signature-section h4 {
+        color: black;
+    }
+}
+
+@media (max-width: 768px) {
+    .student-container {
+        padding: 0 1rem;
+    }
+    
+    .clearance-template {
+        padding: 1rem;
+    }
+    
+    .clearance-header h3 {
+        font-size: 1.5rem;
+    }
+}

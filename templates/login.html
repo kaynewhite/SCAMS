@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-form">
+        <h2>Login</h2>
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+        
+        <div class="form-actions">
+            <a href="{{ url_for('register') }}" class="btn-secondary">Register as Student</a>
+        </div>
+    </div>
+
+    <div class="demo-users">
+        <h3>Demo Users</h3>
+        <div class="user-group">
+            <h4>Admin Users:</h4>
+            <p>admin1, admin2, admin3</p>
+            <p>Password: admin123</p>
+        </div>
+        <div class="user-group">
+            <h4>Student Users:</h4>
+            <p>0221-1001, 0222-1002</p>
+            <p>Password: student123</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

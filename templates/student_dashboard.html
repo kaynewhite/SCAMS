@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="student-container">
+    <h2>Student Dashboard - {{ session.name }}</h2>
+    
+    <div class="section">
+        <h3>Your Requirements</h3>
+        <div class="form-group">
+            <button onclick="loadStudentRequirements()" class="btn-primary">Refresh Requirements</button>
+        </div>
+        
+        <div id="student-requirements" class="requirements-container">
+            <!-- Requirements will be loaded here -->
+        </div>
+        
+        <div id="clearance-status" class="clearance-status">
+            <!-- Clearance status will be shown here -->
+        </div>
+        
+        <button id="print-clearance-btn" style="display:none;" onclick="printClearance()" class="btn-success">Print Clearance</button>
+    </div>
+
+    <!-- Printable Clearance Template -->
+    <div id="clearance-template" class="clearance-template" style="display:none;">
+        <div class="clearance-header">
+            <h3>Clearance for Semester</h3>
+            <p><strong>Student:</strong> {{ session.name }}</p>
+            <p><strong>Student Number:</strong> {{ session.username }}</p>
+        </div>
+        
+        <div class="clearance-body">
+            <h4>Completed Requirements:</h4>
+            <ul id="completed-req-list"></ul>
+        </div>
+        
+        <div id="signature-section" class="signature-section">
+            <h4>Signatures:</h4>
+            <div id="signature-template-display"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/student.js') }}"></script>
+{% endblock %}
