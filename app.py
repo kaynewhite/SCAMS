@@ -215,13 +215,13 @@ def students_api():
     major = request.args.get('major', '').strip()
     section = request.args.get('section', '').strip()
     
-    # Build query with filters
+    # Build query with filters - exclude students who have submitted clearances
     query = '''
         SELECT u.id, u.username, u.name, u.course, u.year, u.major, u.section,
-               CASE WHEN c.submitted IS NULL THEN 0 ELSE c.submitted END as clearance_submitted
+               0 as clearance_submitted
         FROM users u
-        LEFT JOIN clearances c ON u.id = c.student_id
         WHERE u.user_type = 'student'
+        AND u.id NOT IN (SELECT student_id FROM submitted_clearances)
     '''
     params = []
     
@@ -561,11 +561,42 @@ def undo_submission():
     cursor = conn.cursor()
     
     try:
+        # Get the submitted clearance data to restore requirements
+        cursor.execute('''
+            SELECT completed_requirements, signature_template 
+            FROM submitted_clearances 
+            WHERE student_id = ?
+        ''', (student_id,))
+        
+        submitted_data = cursor.fetchone()
+        if not submitted_data:
+            return jsonify({'success': False, 'message': 'No submitted clearance found for this student'})
+        
+        completed_requirements = json.loads(submitted_data[0]) if submitted_data[0] else []
+        signature_template = submitted_data[1]
+        
+        # Restore student requirements
+        cursor.execute('SELECT id, name FROM requirements')
+        all_requirements = cursor.fetchall()
+        
+        for req_id, req_name in all_requirements:
+            # Check if this requirement was completed
+            completed = req_name in completed_requirements
+            
+            # Insert or update student requirement
+            cursor.execute('''
+                INSERT OR REPLACE INTO student_requirements (student_id, requirement_id, completed)
+                VALUES (?, ?, ?)
+            ''', (student_id, req_id, completed))
+        
+        # Restore clearance record
+        cursor.execute('''
+            INSERT OR REPLACE INTO clearances (student_id, submitted, signature_template)
+            VALUES (?, FALSE, ?)
+        ''', (student_id, signature_template))
+        
         # Remove from submitted clearances
         cursor.execute('DELETE FROM submitted_clearances WHERE student_id = ?', (student_id,))
-        
-        # Update clearances table to not submitted
-        cursor.execute('UPDATE clearances SET submitted = FALSE WHERE student_id = ?', (student_id,))
         
         conn.commit()
         return jsonify({'success': True, 'message': 'Submission undone successfully'})
