@@ -1,74 +1,149 @@
-{% extends "base.html" %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
-{% endblock %}
-
-{% block content %}
-<div class="register-container">
-    <div class="register-form">
-        <h2>Student Registration</h2>
-        <form method="POST" action="{{ url_for('register') }}">
-            <div class="form-group">
-                <label for="student_number">Student Number (Format: 022*-****):</label>
-                <input type="text" id="student_number" name="student_number" pattern="022\d-\d{4}" required>
-            </div>
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="course">Course:</label>
-                <select id="course" name="course" required>
-                    <option value="">Select Course</option>
-                    <option value="IT">IT</option>
-                    <option value="IS">IS</option>
-                    <option value="CS">CS</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="year">Year Level:</label>
-                <select id="year" name="year" required onchange="toggleMajorField()">
-                    <option value="">Select Year</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select>
-            </div>
-            <div id="major-field" class="form-group" style="display:none;">
-                <label for="major">Major:</label>
-                <select id="major" name="major">
-                    <option value="">Select Major</option>
-                    <option value="WMAD">WMAD</option>
-                    <option value="AMG">AMG</option>
-                    <option value="SMP">SMP</option>
-                    <option value="NETAD">NETAD</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="section">Section:</label>
-                <select id="section" name="section" required>
-                    <option value="">Select Section</option>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-primary">Register</button>
-        </form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - Clearance System</title>
+    <link rel="stylesheet" href="static/css/base.css">
+    <link rel="stylesheet" href="static/css/register.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Student Clearance System</h1>
+        </header>
         
-        <div class="form-actions">
-            <a href="{{ url_for('login') }}" class="btn-secondary">Back to Login</a>
-        </div>
+        <main class="main">
+            <div class="register-container">
+                <h2>Student Registration</h2>
+                
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                <div id="success-message" class="success-message" style="display: none;"></div>
+                
+                <form id="register-form" class="form">
+                    <div class="form-group">
+                        <label for="student_number">Student Number:</label>
+                        <input type="text" id="student_number" name="student_number" required
+                               placeholder="e.g., 0221-1001" pattern="022[0-9]-[0-9]{4}">
+                        <small>Format: 022*-**** (e.g., 0221-1001)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Full Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="course">Course:</label>
+                        <select id="course" name="course" required>
+                            <option value="">Select Course</option>
+                            <option value="IT">Information Technology</option>
+                            <option value="IS">Information Systems</option>
+                            <option value="CS">Computer Science</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="year">Year Level:</label>
+                        <select id="year" name="year" required onchange="toggleMajorField()">
+                            <option value="">Select Year</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
+                    </div>
+                    
+                    <div id="major-field" class="form-group" style="display:none;">
+                        <label for="major">Major:</label>
+                        <select id="major" name="major">
+                            <option value="">Select Major</option>
+                            <option value="WMAD">Web and Mobile App Development</option>
+                            <option value="AMG">Animation and Motion Graphics</option>
+                            <option value="SMP">Systems and Media Programming</option>
+                            <option value="NETAD">Network Administration</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="section">Section:</label>
+                        <select id="section" name="section" required>
+                            <option value="">Select Section</option>
+                            <option value="A">Section A</option>
+                            <option value="B">Section B</option>
+                            <option value="C">Section C</option>
+                            <option value="D">Section D</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Register</button>
+                </form>
+                
+                <div class="login-link">
+                    <p>Already have an account? <a href="index.html">Login here</a></p>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2025 Student Clearance System</p>
+        </footer>
     </div>
-</div>
 
-<script>
-function toggleMajorField() {
-    const year = document.getElementById('year').value;
-    document.getElementById('major-field').style.display = (year === '3' || year === '4') ? 'block' : 'none';
-}
-</script>
-{% endblock %}
+    <script>
+        function toggleMajorField() {
+            const year = document.getElementById('year').value;
+            document.getElementById('major-field').style.display = (year === '3' || year === '4') ? 'block' : 'none';
+        }
+
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('/.netlify/functions/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('Registration successful! You can now login with your student number as password.');
+                    document.getElementById('register-form').reset();
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    showError(result.message || 'Registration failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            const successDiv = document.getElementById('success-message');
+            successDiv.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
