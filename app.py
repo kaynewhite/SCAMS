@@ -1,8 +1,17 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_file
 import sqlite3
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from datetime import datetime
+import uuid
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
 app = Flask(__name__)
 app.secret_key = 'clearance_system_secret_key_2025'
@@ -58,25 +67,23 @@ def init_db():
         )
     ''')
     
-    # Insert default users
-    admin_users = [
-        ('admin1', 'admin123', 'Admin One', 'admin'),
-        ('admin2', 'admin123', 'Admin Two', 'admin'),
-        ('admin3', 'admin123', 'Admin Three', 'admin')
-    ]
+    # Submitted clearances table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS submitted_clearances (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            student_name TEXT,
+            student_number TEXT,
+            completed_requirements TEXT,
+            signature_template TEXT,
+            submitted_date TEXT,
+            FOREIGN KEY (student_id) REFERENCES users (id)
+        )
+    ''')
     
-    student_users = [
-        ('0221-1001', 'student123', 'John Doe', 'student', 'IT', 3, 'WMAD', 'A'),
-        ('0222-1002', 'student123', 'Jane Smith', 'student', 'CS', 2, '', 'B')
-    ]
-    
-    for username, password, name, user_type in admin_users:
-        cursor.execute('INSERT OR IGNORE INTO users (username, password, name, user_type) VALUES (?, ?, ?, ?)',
-                      (username, generate_password_hash(password), name, user_type))
-    
-    for username, password, name, user_type, course, year, major, section in student_users:
-        cursor.execute('INSERT OR IGNORE INTO users (username, password, name, user_type, course, year, major, section) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                      (username, generate_password_hash(password), name, user_type, course, year, major, section))
+    # Insert single admin user
+    cursor.execute('INSERT OR IGNORE INTO users (username, password, name, user_type) VALUES (?, ?, ?, ?)',
+                  ('ronronadmin', generate_password_hash('ronron1234'), 'System Administrator', 'admin'))
     
     conn.commit()
     conn.close()
@@ -334,11 +341,36 @@ def submit_clearance_api():
         conn.close()
         return jsonify({'success': False, 'message': 'Student has not completed all requirements'})
     
-    # Insert or update clearance record
+    # Get student info and completed requirements
+    cursor.execute('SELECT username, name FROM users WHERE id = ?', (student_id,))
+    student_info = cursor.fetchone()
+    
     cursor.execute('''
-        INSERT OR REPLACE INTO clearances (student_id, submitted) 
-        VALUES (?, 1)
+        SELECT r.name 
+        FROM requirements r
+        JOIN student_requirements sr ON r.id = sr.requirement_id
+        WHERE sr.student_id = ? AND sr.completed = 1
+        ORDER BY r.name
     ''', (student_id,))
+    
+    completed_reqs = [row[0] for row in cursor.fetchall()]
+    
+    # Get signature template
+    cursor.execute('SELECT signature_template FROM clearances WHERE student_id = ?', (student_id,))
+    sig_template = cursor.fetchone()
+    signature_template = sig_template[0] if sig_template else None
+    
+    # Move to submitted clearances table
+    submitted_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute('''
+        INSERT INTO submitted_clearances 
+        (student_id, student_name, student_number, completed_requirements, signature_template, submitted_date)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ''', (student_id, student_info[1], student_info[0], json.dumps(completed_reqs), signature_template, submitted_date))
+    
+    # Remove from active clearances
+    cursor.execute('DELETE FROM clearances WHERE student_id = ?', (student_id,))
+    cursor.execute('DELETE FROM student_requirements WHERE student_id = ?', (student_id,))
     
     conn.commit()
     conn.close()
@@ -458,6 +490,130 @@ def signature_template_api():
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# API Routes for Delete Operations
+@app.route('/api/requirements/<int:req_id>', methods=['DELETE'])
+def delete_requirement_api(req_id):
+    if 'user_id' not in session or session.get('user_type') != 'admin':
+        return jsonify({'success': False, 'message': 'Admin access required'}), 403
+    
+    conn = sqlite3.connect('clearance_system.db')
+    cursor = conn.cursor()
+    
+    # Delete associated student requirements first
+    cursor.execute('DELETE FROM student_requirements WHERE requirement_id = ?', (req_id,))
+    # Delete the requirement
+    cursor.execute('DELETE FROM requirements WHERE id = ?', (req_id,))
+    
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'success': True})
+
+@app.route('/api/submitted-clearances')
+def submitted_clearances_api():
+    if 'user_id' not in session or session.get('user_type') != 'admin':
+        return jsonify({'success': False, 'message': 'Admin access required'}), 403
+    
+    conn = sqlite3.connect('clearance_system.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT id, student_name, student_number, submitted_date 
+        FROM submitted_clearances 
+        ORDER BY submitted_date DESC
+    ''')
+    
+    clearances = []
+    for row in cursor.fetchall():
+        clearances.append({
+            'id': row[0],
+            'student_name': row[1],
+            'student_number': row[2],
+            'submitted_date': row[3]
+        })
+    
+    conn.close()
+    return jsonify(clearances)
+
+@app.route('/api/download-clearance/<int:clearance_id>')
+def download_clearance_api(clearance_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
+    
+    conn = sqlite3.connect('clearance_system.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT student_name, student_number, completed_requirements, signature_template, submitted_date
+        FROM submitted_clearances WHERE id = ?
+    ''', (clearance_id,))
+    
+    clearance = cursor.fetchone()
+    conn.close()
+    
+    if not clearance:
+        return jsonify({'success': False, 'message': 'Clearance not found'}), 404
+    
+    # Generate PDF
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        spaceAfter=30,
+        alignment=TA_CENTER,
+    )
+    
+    normal_style = ParagraphStyle(
+        'CustomNormal',
+        parent=styles['Normal'],
+        fontSize=12,
+        spaceAfter=12,
+        alignment=TA_LEFT,
+    )
+    
+    story = []
+    
+    # Title
+    story.append(Paragraph("STUDENT CLEARANCE CERTIFICATE", title_style))
+    story.append(Spacer(1, 12))
+    
+    # Student Info
+    story.append(Paragraph(f"<b>Student Name:</b> {clearance[0]}", normal_style))
+    story.append(Paragraph(f"<b>Student Number:</b> {clearance[1]}", normal_style))
+    story.append(Paragraph(f"<b>Date of Submission:</b> {clearance[4]}", normal_style))
+    story.append(Spacer(1, 20))
+    
+    # Requirements
+    story.append(Paragraph("<b>Completed Requirements:</b>", normal_style))
+    story.append(Spacer(1, 12))
+    
+    requirements = json.loads(clearance[2])
+    for req in requirements:
+        story.append(Paragraph(f"• {req}", normal_style))
+    
+    story.append(Spacer(1, 30))
+    
+    # Signature section
+    if clearance[3]:
+        story.append(Paragraph("<b>Authorized Signatures:</b>", normal_style))
+        story.append(Spacer(1, 12))
+        # You would add the signature image here if needed
+        story.append(Paragraph("[Signature Template Section]", normal_style))
+    
+    doc.build(story)
+    buffer.seek(0)
+    
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"clearance_{clearance[1]}_{clearance[4].replace(':', '_').replace(' ', '_')}.pdf",
+        mimetype='application/pdf'
+    )
 
 if __name__ == '__main__':
     init_db()
