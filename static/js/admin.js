@@ -132,9 +132,7 @@ async function loadSubmittedClearances() {
                         <p>Submitted: ${new Date(clearance.submitted_date).toLocaleDateString()}</p>
                     </div>
                     <div class="clearance-actions">
-                        <a href="/api/download-clearance/${clearance.id}" 
-                           class="btn-primary btn-small" 
-                           download>Download PDF</a>
+                        <button onclick="undoSubmission(${clearance.student_id})" class="btn btn-warning">Undo Submission</button>
                     </div>
                 </div>
             `;
@@ -363,6 +361,81 @@ async function loadAllStudentsList() {
         
     } catch (error) {
         console.error('Error loading all students:', error);
+    }
+}
+
+async function clearAllRequirements() {
+    if (!confirm('Are you sure you want to clear ALL requirements? This will also revert all submitted clearances to pending status.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/clear-all-requirements', {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            alert('All requirements cleared and submitted clearances reverted to pending.');
+            loadAdminRequirements();
+            loadStudentsList();
+            loadSubmittedClearances();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error clearing requirements:', error);
+        alert('Error clearing requirements');
+    }
+}
+
+async function undoSubmission(studentId) {
+    if (!confirm('Are you sure you want to undo this student\'s clearance submission?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/undo-submission', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ student_id: studentId })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            alert('Submission undone successfully.');
+            loadSubmittedClearances();
+            loadStudentsList();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error undoing submission:', error);
+        alert('Error undoing submission');
+    }
+}
+
+async function downloadAllClearances() {
+    try {
+        const response = await fetch('/download-all-clearances');
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'all_completed_clearances.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } else {
+            alert('Error downloading clearances');
+        }
+    } catch (error) {
+        console.error('Error downloading clearances:', error);
+        alert('Error downloading clearances');
     }
 }
 

@@ -23,6 +23,7 @@
             <div class="form-group">
                 <input type="text" id="new-requirement" placeholder="Requirement name">
                 <button onclick="addRequirement()" class="btn-primary">Add Requirement</button>
+                <button onclick="clearAllRequirements()" class="btn btn-danger" style="margin-left: 1rem;">Clear All Requirements</button>
             </div>
             
             <div class="requirements-list">
@@ -97,6 +98,9 @@
         <div class="section">
             <h3>Submitted Clearances</h3>
             <div id="submitted-clearances-list" class="clearances-container"></div>
+            <div class="bulk-actions" style="margin-top: 2rem; text-align: center;">
+                <button onclick="downloadAllClearances()" class="btn btn-success">Download All Completed Clearances</button>
+            </div>
         </div>
     </div>
 </div>
