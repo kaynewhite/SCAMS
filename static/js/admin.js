@@ -406,8 +406,10 @@ async function undoSubmission(studentId) {
         const result = await response.json();
         if (result.success) {
             alert('Submission undone successfully.');
+            // Refresh all relevant lists
             loadSubmittedClearances();
             loadStudentsList();
+            loadAllStudentsList();
         } else {
             alert('Error: ' + result.message);
         }
