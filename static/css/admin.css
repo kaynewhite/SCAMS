@@ -259,6 +259,57 @@
     gap: 0.5rem;
 }
 
+/* Students Table */
+.students-table-container {
+    overflow-x: auto;
+}
+
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.students-table th,
+.students-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.students-table th {
+    background: var(--primary-blue);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+}
+
+.students-table tbody tr:hover {
+    background: var(--bg-light);
+}
+
+.students-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Dark mode for table */
+body.dark-mode .students-table {
+    background: var(--bg-white);
+}
+
+body.dark-mode .students-table th {
+    background: #1a202c;
+}
+
+body.dark-mode .students-table tbody tr:hover {
+    background: #2d3748;
+}
+
 @media (max-width: 768px) {
     .admin-tabs {
         flex-direction: column;
@@ -292,5 +343,14 @@
     .requirement-content {
         flex-direction: column;
         align-items: flex-start;
+    }
+    
+    .students-table {
+        font-size: 0.875rem;
+    }
+    
+    .students-table th,
+    .students-table td {
+        padding: 0.75rem 0.5rem;
     }
 }

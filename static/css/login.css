@@ -25,7 +25,7 @@
     margin-top: 1.5rem;
 }
 
-.demo-users {
+.login-info {
     background: var(--bg-white);
     padding: 2rem;
     border-radius: var(--border-radius);
@@ -33,28 +33,24 @@
     border-left: 4px solid var(--accent-gold);
 }
 
-.demo-users h3 {
+.login-info h3 {
     color: var(--primary-blue);
     margin-bottom: 1.5rem;
     text-align: center;
 }
 
-.user-group {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: var(--bg-light);
-    border-radius: var(--border-radius);
+.info-text {
+    line-height: 1.6;
 }
 
-.user-group h4 {
+.info-text p {
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.info-text strong {
     color: var(--primary-blue);
-    margin-bottom: 0.5rem;
-}
-
-.user-group p {
-    margin: 0.25rem 0;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 @media (max-width: 768px) {

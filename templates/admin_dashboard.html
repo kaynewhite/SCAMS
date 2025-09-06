@@ -12,6 +12,7 @@
         <button class="tab-btn active" onclick="showTab('requirements')">Manage Requirements</button>
         <button class="tab-btn" onclick="showTab('signature')">Signature Template</button>
         <button class="tab-btn" onclick="showTab('students')">Student Management</button>
+        <button class="tab-btn" onclick="showTab('student-list')">All Students</button>
         <button class="tab-btn" onclick="showTab('clearances')">Submitted Clearances</button>
     </div>
 
@@ -80,6 +81,14 @@
             </div>
             
             <div id="students-list" class="students-container"></div>
+        </div>
+    </div>
+
+    <!-- All Students List -->
+    <div id="student-list-tab" class="tab-content">
+        <div class="section">
+            <h3>All Registered Students</h3>
+            <div id="all-students-list" class="students-table-container"></div>
         </div>
     </div>
 
