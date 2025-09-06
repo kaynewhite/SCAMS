@@ -1,10 +1,23 @@
-{% extends "base.html" %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-{% endblock %}
-
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Clearance System</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Student Clearance System</h1>
+            <div class="user-info">
+                <span>Welcome, Admin</span>
+                <a href="#" onclick="logout()" class="logout-btn">Logout</a>
+            </div>
+        </header>
+        
+        <main class="main">
 <div class="admin-container">
     <h2>Admin Dashboard</h2>
     
@@ -104,6 +117,50 @@
         </div>
     </div>
 </div>
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2025 Student Clearance System</p>
+        </footer>
+    </div>
 
-<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
-{% endblock %}
+    <script>
+        // Session management
+        let currentSession = null;
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const session = localStorage.getItem('session');
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const sessionData = JSON.parse(session);
+            if (sessionData.user_type !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            currentSession = sessionData;
+            // Update welcome message
+            document.querySelector('.user-info span').textContent = `Welcome, ${sessionData.name}`;
+        });
+
+        function logout() {
+            localStorage.removeItem('session');
+            window.location.href = 'index.html';
+        }
+
+        // Function to get authorization header for API calls
+        function getAuthHeaders() {
+            if (!currentSession) return {};
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${JSON.stringify(currentSession)}`
+            };
+        }
+    </script>
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>

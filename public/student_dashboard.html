@@ -1,10 +1,23 @@
-{% extends "base.html" %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
-{% endblock %}
-
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Clearance System</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/student.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Student Clearance System</h1>
+            <div class="user-info">
+                <span>Welcome, Student</span>
+                <a href="#" onclick="logout()" class="logout-btn">Logout</a>
+            </div>
+        </header>
+        
+        <main class="main">
 <div class="student-container">
     <h2>Student Dashboard</h2>
     
@@ -29,8 +42,8 @@
     <div id="clearance-template" class="clearance-template" style="display:none;">
         <div class="clearance-header">
             <h3>Clearance for Semester</h3>
-            <p><strong>Student:</strong> {{ session.name }}</p>
-            <p><strong>Student Number:</strong> {{ session.username }}</p>
+            <p><strong>Student:</strong> <span id="student-name"></span></p>
+            <p><strong>Student Number:</strong> <span id="student-number"></span></p>
         </div>
         
         <div class="clearance-body">
@@ -44,6 +57,52 @@
         </div>
     </div>
 </div>
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2025 Student Clearance System</p>
+        </footer>
+    </div>
 
-<script src="{{ url_for('static', filename='js/student.js') }}"></script>
-{% endblock %}
+    <script>
+        // Session management
+        let currentSession = null;
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const session = localStorage.getItem('session');
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const sessionData = JSON.parse(session);
+            if (sessionData.user_type !== 'student') {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            currentSession = sessionData;
+            // Update welcome message and student info
+            document.querySelector('.user-info span').textContent = `Welcome, ${sessionData.name}`;
+            document.getElementById('student-name').textContent = sessionData.name;
+            document.getElementById('student-number').textContent = sessionData.username;
+        });
+
+        function logout() {
+            localStorage.removeItem('session');
+            window.location.href = 'index.html';
+        }
+
+        // Function to get authorization header for API calls
+        function getAuthHeaders() {
+            if (!currentSession) return {};
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${JSON.stringify(currentSession)}`
+            };
+        }
+    </script>
+    <script src="/static/js/student.js"></script>
+</body>
+</html>
