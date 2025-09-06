@@ -11,15 +11,12 @@
     <header>
         <div class="header-content">
             <h1>Clearance System</h1>
-            <div class="header-controls">
-                <button id="dark-mode-toggle" class="dark-mode-btn" onclick="toggleDarkMode()">🌙</button>
-                {% if session.name %}
-                <div class="user-info">
-                    <span>Welcome, {% if session.user_type == 'admin' %}Ron{% else %}{{ session.name }}{% endif %}</span>
-                    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
-                </div>
-                {% endif %}
+            {% if session.name %}
+            <div class="user-info">
+                <span>Welcome, {% if session.user_type == 'admin' %}Ron{% else %}{{ session.name }}{% endif %}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
             </div>
+            {% endif %}
         </div>
     </header>
 
@@ -41,30 +38,6 @@
         <p>&copy; 2025 Clearance System</p>
     </footer>
 
-    <script>
-        // Dark mode functionality
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDark);
-            updateDarkModeIcon();
-        }
-        
-        function updateDarkModeIcon() {
-            const btn = document.getElementById('dark-mode-toggle');
-            const isDark = document.body.classList.contains('dark-mode');
-            btn.textContent = isDark ? '☀️' : '🌙';
-        }
-        
-        // Load dark mode preference
-        document.addEventListener('DOMContentLoaded', function() {
-            const darkMode = localStorage.getItem('darkMode') === 'true';
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
-            }
-            updateDarkModeIcon();
-        });
-    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
