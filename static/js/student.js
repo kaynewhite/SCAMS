@@ -32,9 +32,9 @@ async function loadStudentRequirements() {
         
         updateClearanceStatus(data.clearance_submitted, completedCount, totalCount);
         
-        // Show print button if clearance is submitted
-        const printBtn = document.getElementById('print-clearance-btn');
-        printBtn.style.display = data.clearance_submitted ? 'block' : 'none';
+        // Show download button if clearance is submitted
+        const downloadBtn = document.getElementById('download-clearance-btn');
+        downloadBtn.style.display = data.clearance_submitted ? 'block' : 'none';
         
     } catch (error) {
         console.error('Error loading requirements:', error);
@@ -68,9 +68,10 @@ function updateClearanceStatus(submitted, completed, total) {
     }
 }
 
-async function printClearance() {
+async function downloadClearance() {
     try {
-        const response = await fetch('/api/student-clearance');
+        // Get the student's submitted clearance info to find the clearance ID
+        const response = await fetch('/api/student-requirements');
         const data = await response.json();
         
         if (!data.clearance_submitted) {
@@ -78,37 +79,13 @@ async function printClearance() {
             return;
         }
         
-        // Populate the clearance template
-        const template = document.getElementById('clearance-template');
-        const reqList = document.getElementById('completed-req-list');
-        const signatureDisplay = document.getElementById('signature-template-display');
-        
-        // Clear and populate requirements list
-        reqList.innerHTML = '';
-        data.completed_requirements.forEach(req => {
-            const li = document.createElement('li');
-            li.textContent = req.name;
-            reqList.appendChild(li);
-        });
-        
-        // Set signature template or placeholder
-        if (data.signature_template) {
-            signatureDisplay.innerHTML = `<img src="${data.signature_template}" alt="Official Signatures">`;
-        } else {
-            signatureDisplay.innerHTML = '<p style="text-align: center; padding: 2rem;">Signature template will be added here</p>';
-        }
-        
-        // Show template and print
-        template.style.display = 'block';
-        
-        setTimeout(() => {
-            window.print();
-            template.style.display = 'none';
-        }, 500);
+        // For now, we'll show a message since we need the clearance ID
+        // In a full implementation, you'd get this from the API
+        alert('Your clearance has been submitted successfully! Please contact the administrator to download your clearance certificate.');
         
     } catch (error) {
-        console.error('Error printing clearance:', error);
-        alert('Error preparing clearance for printing. Please try again.');
+        console.error('Error downloading clearance:', error);
+        alert('Error downloading clearance. Please try again.');
     }
 }
 

@@ -61,28 +61,75 @@
     margin-bottom: 1rem;
 }
 
-#admin-requirements-list {
-    list-style: none;
-    padding: 0;
+.requirements-container {
+    display: grid;
+    gap: 1rem;
 }
 
-#admin-requirements-list li {
-    background: var(--bg-light);
-    padding: 1rem;
-    margin-bottom: 0.5rem;
+.requirement-card {
+    background: white;
+    border: 1px solid var(--border-light);
     border-radius: var(--border-radius);
-    border-left: 4px solid var(--accent-gold);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.requirement-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.requirement-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.requirement-name {
+    font-weight: 600;
+    color: var(--primary-blue);
+    flex: 1;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.no-data {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 2rem;
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
+    border: 2px dashed var(--border-light);
 }
 
 /* Search Filters */
 .search-filters {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: 2fr repeat(4, 1fr) auto;
     gap: 1rem;
+    align-items: end;
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background: var(--bg-light);
+    background: linear-gradient(135deg, var(--bg-light) 0%, #f8f9fa 100%);
     border-radius: var(--border-radius);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow);
+}
+
+.search-filters input,
+.search-filters select {
+    margin-bottom: 0;
+}
+
+.search-filters input::placeholder {
+    color: #6c757d;
+    font-style: italic;
 }
 
 /* Students Container */
@@ -170,6 +217,48 @@
     border-radius: var(--border-radius);
 }
 
+/* Clearances Styles */
+.clearances-container {
+    display: grid;
+    gap: 1rem;
+}
+
+.clearance-card {
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.clearance-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.clearance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clearance-info h4 {
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.clearance-info p {
+    margin: 0.25rem 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.clearance-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
 @media (max-width: 768px) {
     .admin-tabs {
         flex-direction: column;
@@ -192,5 +281,16 @@
     
     .requirements-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .clearance-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .requirement-content {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

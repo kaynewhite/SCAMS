@@ -21,6 +21,8 @@ function showTab(tabName) {
         loadAdminRequirements();
     } else if (tabName === 'students') {
         loadStudentsList();
+    } else if (tabName === 'clearances') {
+        loadSubmittedClearances();
     }
 }
 
@@ -58,16 +60,86 @@ async function loadAdminRequirements() {
         const response = await fetch('/api/requirements');
         const requirements = await response.json();
         
-        const ul = document.getElementById('admin-requirements-list');
-        ul.innerHTML = '';
+        const container = document.getElementById('admin-requirements-list');
+        container.innerHTML = '';
+        
+        if (requirements.length === 0) {
+            container.innerHTML = '<p class="no-data">No requirements posted yet.</p>';
+            return;
+        }
         
         requirements.forEach(req => {
-            const li = document.createElement('li');
-            li.textContent = req.name;
-            ul.appendChild(li);
+            const reqCard = document.createElement('div');
+            reqCard.className = 'requirement-card';
+            reqCard.innerHTML = `
+                <div class="requirement-content">
+                    <span class="requirement-name">${req.name}</span>
+                    <button class="btn-danger btn-small" onclick="deleteRequirement(${req.id})">Delete</button>
+                </div>
+            `;
+            container.appendChild(reqCard);
         });
     } catch (error) {
         console.error('Error loading requirements:', error);
+    }
+}
+
+async function deleteRequirement(reqId) {
+    if (!confirm('Are you sure you want to delete this requirement? This will remove it from all students.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/requirements/${reqId}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            loadAdminRequirements();
+            loadStudentsList(); // Refresh students list too
+        } else {
+            alert(result.message || 'Failed to delete requirement');
+        }
+    } catch (error) {
+        alert('Error deleting requirement: ' + error.message);
+    }
+}
+
+async function loadSubmittedClearances() {
+    try {
+        const response = await fetch('/api/submitted-clearances');
+        const clearances = await response.json();
+        
+        const container = document.getElementById('submitted-clearances-list');
+        container.innerHTML = '';
+        
+        if (clearances.length === 0) {
+            container.innerHTML = '<p class="no-data">No clearances submitted yet.</p>';
+            return;
+        }
+        
+        clearances.forEach(clearance => {
+            const clearanceCard = document.createElement('div');
+            clearanceCard.className = 'clearance-card';
+            clearanceCard.innerHTML = `
+                <div class="clearance-header">
+                    <div class="clearance-info">
+                        <h4>${clearance.student_name}</h4>
+                        <p>Student Number: ${clearance.student_number}</p>
+                        <p>Submitted: ${new Date(clearance.submitted_date).toLocaleDateString()}</p>
+                    </div>
+                    <div class="clearance-actions">
+                        <a href="/api/download-clearance/${clearance.id}" 
+                           class="btn-primary btn-small" 
+                           download>Download PDF</a>
+                    </div>
+                </div>
+            `;
+            container.appendChild(clearanceCard);
+        });
+    } catch (error) {
+        console.error('Error loading submitted clearances:', error);
     }
 }
 
