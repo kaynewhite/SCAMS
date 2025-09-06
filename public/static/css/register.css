@@ -1,0 +1,47 @@
+.register-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.register-form {
+    background: var(--bg-white);
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.register-form h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-blue);
+    font-size: 2rem;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+#major-field {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-group input[pattern] {
+    font-family: 'Courier New', monospace;
+}
+
+.form-group input[pattern]:placeholder {
+    font-family: 'Segoe UI', sans-serif;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .register-form {
+        padding: 1.5rem;
+    }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "clearance-system-netlify",
+  "version": "1.0.0",
+  "description": "Student Clearance System for Netlify",
+  "scripts": {
+    "build": "echo 'No build step needed'"
+  },
+  "dependencies": {
+    "@netlify/functions": "^2.0.0"
+  }
+}

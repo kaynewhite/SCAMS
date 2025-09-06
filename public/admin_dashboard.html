@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h2>Admin Dashboard</h2>
+    
+    <div class="admin-tabs">
+        <button class="tab-btn active" onclick="showTab('requirements')">Manage Requirements</button>
+        <button class="tab-btn" onclick="showTab('signature')">Signature Template</button>
+        <button class="tab-btn" onclick="showTab('students')">Student Management</button>
+        <button class="tab-btn" onclick="showTab('student-list')">All Students</button>
+        <button class="tab-btn" onclick="showTab('clearances')">Submitted Clearances</button>
+    </div>
+
+    <!-- Requirements Management -->
+    <div id="requirements-tab" class="tab-content active">
+        <div class="section">
+            <h3>Post New Requirement</h3>
+            <div class="form-group">
+                <input type="text" id="new-requirement" placeholder="Requirement name">
+                <button onclick="addRequirement()" class="btn-primary">Add Requirement</button>
+                <button onclick="clearAllRequirements()" class="btn btn-danger" style="margin-left: 1rem;">Clear All Requirements</button>
+            </div>
+            
+            <div class="requirements-list">
+                <h4>Current Requirements:</h4>
+                <div id="admin-requirements-list" class="requirements-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signature Template -->
+    <div id="signature-tab" class="tab-content">
+        <div class="section">
+            <h3>Upload Signature Template</h3>
+            <div class="form-group">
+                <input type="file" id="signature-upload" accept="image/*">
+                <button onclick="uploadSignature()" class="btn-primary">Upload</button>
+            </div>
+            <div id="signature-preview"></div>
+        </div>
+    </div>
+
+    <!-- Student Management -->
+    <div id="students-tab" class="tab-content">
+        <div class="section">
+            <h3>Search/Filter Students</h3>
+            <div class="search-filters">
+                <input type="text" id="search-student-number" placeholder="Student Number">
+                <select id="filter-course">
+                    <option value="">All Courses</option>
+                    <option value="IT">IT</option>
+                    <option value="IS">IS</option>
+                    <option value="CS">CS</option>
+                </select>
+                <select id="filter-year">
+                    <option value="">All Years</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+                <select id="filter-major">
+                    <option value="">All Majors</option>
+                    <option value="WMAD">WMAD</option>
+                    <option value="AMG">AMG</option>
+                    <option value="SMP">SMP</option>
+                    <option value="NETAD">NETAD</option>
+                </select>
+                <select id="filter-section">
+                    <option value="">All Sections</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+                <button onclick="searchStudents()" class="btn-primary">Search/Filter</button>
+            </div>
+            
+            <div id="students-list" class="students-container"></div>
+        </div>
+    </div>
+
+    <!-- All Students List -->
+    <div id="student-list-tab" class="tab-content">
+        <div class="section">
+            <h3>All Registered Students</h3>
+            <div id="all-students-list" class="students-table-container"></div>
+        </div>
+    </div>
+
+    <!-- Submitted Clearances -->
+    <div id="clearances-tab" class="tab-content">
+        <div class="section">
+            <h3>Submitted Clearances</h3>
+            <div id="submitted-clearances-list" class="clearances-container"></div>
+            <div class="bulk-actions" style="margin-top: 2rem; text-align: center;">
+                <button onclick="downloadAllClearances()" class="btn btn-success">Download All Completed Clearances</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
