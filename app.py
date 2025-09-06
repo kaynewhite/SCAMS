@@ -684,7 +684,7 @@ def submitted_clearances_api():
     cursor = conn.cursor()
     
     cursor.execute('''
-        SELECT id, student_name, student_number, submitted_date 
+        SELECT id, student_id, student_name, student_number, submitted_date 
         FROM submitted_clearances 
         ORDER BY submitted_date DESC
     ''')
@@ -693,9 +693,10 @@ def submitted_clearances_api():
     for row in cursor.fetchall():
         clearances.append({
             'id': row[0],
-            'student_name': row[1],
-            'student_number': row[2],
-            'submitted_date': row[3]
+            'student_id': row[1],
+            'student_name': row[2],
+            'student_number': row[3],
+            'submitted_date': row[4]
         })
     
     conn.close()
