@@ -63,7 +63,7 @@ function updateClearanceStatus(submitted, completed, total) {
         statusDiv.className = 'clearance-status pending';
         statusDiv.innerHTML = `
             <span>📋 Clearance Progress: ${completed}/${total} requirements completed</span><br>
-            <span>Please complete all requirements to receive your clearance.</span>
+            <span style="color: #dc3545; font-weight: bold;">⚠️ Please visit the SBO office to complete all requirements before downloading your clearance.</span>
         `;
     }
 }

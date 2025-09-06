@@ -516,6 +516,111 @@ def all_students_api():
     conn.close()
     return jsonify(students)
 
+@app.route('/api/clear-all-requirements', methods=['POST'])
+def clear_all_requirements():
+    if 'user_id' not in session or session.get('user_type') != 'admin':
+        return jsonify({'success': False, 'message': 'Admin access required'}), 403
+    
+    conn = sqlite3.connect('clearance_system.db')
+    cursor = conn.cursor()
+    
+    try:
+        # Clear all requirements
+        cursor.execute('DELETE FROM requirements')
+        
+        # Clear all student requirements
+        cursor.execute('DELETE FROM student_requirements')
+        
+        # Move submitted clearances back to pending by deleting from submitted table
+        cursor.execute('DELETE FROM submitted_clearances')
+        
+        # Reset clearances table to not submitted
+        cursor.execute('UPDATE clearances SET submitted = FALSE')
+        
+        conn.commit()
+        return jsonify({'success': True, 'message': 'All requirements cleared and submissions reverted'})
+        
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn.close()
+
+@app.route('/api/undo-submission', methods=['POST'])
+def undo_submission():
+    if 'user_id' not in session or session.get('user_type') != 'admin':
+        return jsonify({'success': False, 'message': 'Admin access required'}), 403
+    
+    data = request.get_json()
+    student_id = data.get('student_id')
+    
+    if not student_id:
+        return jsonify({'success': False, 'message': 'Student ID is required'})
+    
+    conn = sqlite3.connect('clearance_system.db')
+    cursor = conn.cursor()
+    
+    try:
+        # Remove from submitted clearances
+        cursor.execute('DELETE FROM submitted_clearances WHERE student_id = ?', (student_id,))
+        
+        # Update clearances table to not submitted
+        cursor.execute('UPDATE clearances SET submitted = FALSE WHERE student_id = ?', (student_id,))
+        
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Submission undone successfully'})
+        
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn.close()
+
+@app.route('/download-all-clearances')
+def download_all_clearances():
+    if 'user_id' not in session or session.get('user_type') != 'admin':
+        return jsonify({'success': False, 'message': 'Admin access required'}), 403
+    
+    conn = sqlite3.connect('clearance_system.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT student_name, student_number, submitted_date
+        FROM submitted_clearances
+        ORDER BY student_name
+    ''')
+    
+    clearances = cursor.fetchall()
+    conn.close()
+    
+    # Create CSV content
+    csv_content = "Name,Student Number,Course,Year Level,Section,Major,Submitted Date\n"
+    
+    # Get detailed student info for each clearance
+    conn = sqlite3.connect('clearance_system.db')
+    cursor = conn.cursor()
+    
+    for clearance in clearances:
+        student_number = clearance[1]
+        cursor.execute('''
+            SELECT name, username, course, year, section, major
+            FROM users 
+            WHERE username = ? AND user_type = 'student'
+        ''', (student_number,))
+        
+        student_info = cursor.fetchone()
+        if student_info:
+            csv_content += f"{student_info[0]},{student_info[1]},{student_info[2]},{student_info[3]},{student_info[4]},{student_info[5] or ''},{clearance[2]}\n"
+    
+    conn.close()
+    
+    # Create response
+    response = make_response(csv_content)
+    response.headers["Content-Disposition"] = "attachment; filename=all_completed_clearances.csv"
+    response.headers["Content-Type"] = "text/csv"
+    
+    return response
+
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
