@@ -1,0 +1,221 @@
+/* CCS-inspired color palette */
+:root {
+    --ccs-blue: #002147;
+    --ccs-gold: #ffd600;
+    --ccs-red: #c62828;
+    --ccs-white: #fff;
+    --ccs-gray: #f5f5f5;
+    --ccs-dark: #222;
+    --ccs-shadow: 0 4px 16px rgba(0,33,71,0.10);
+    --ccs-radius: 18px;
+}
+
+/* Reset and base styles */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--ccs-gold);
+    color: var(--ccs-dark);
+    min-height: 100vh;
+    /* Add a subtle CCS logo watermark if available */
+    background-image: url('../images/ccs-logo-watermark.png');
+    background-repeat: no-repeat;
+    background-position: top right;
+    background-size: 120px auto;
+}
+
+header {
+    background: var(--ccs-blue);
+    color: var(--ccs-gold);
+    padding: 2rem 0 1rem 0;
+    text-align: center;
+    box-shadow: var(--ccs-shadow);
+    border-radius: 0 0 var(--ccs-radius) var(--ccs-radius);
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+
+main {
+    max-width: 480px;
+    margin: 2.5rem auto;
+    background: var(--ccs-white);
+    border-radius: var(--ccs-radius);
+    box-shadow: var(--ccs-shadow);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1.5px solid var(--ccs-blue);
+}
+
+section {
+    margin-bottom: 2rem;
+    width: 100%;
+    background: var(--ccs-blue);
+    border-radius: var(--ccs-radius);
+    padding: 1.5rem 1rem;
+    box-shadow: var(--ccs-shadow);
+    color: var(--ccs-gold);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--ccs-gold);
+}
+
+h2 {
+    color: var(--ccs-gold);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    color: var(--ccs-gold);
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+    padding: 0.7rem;
+    border: 2px solid var(--ccs-gold);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: var(--ccs-gray);
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0.2rem;
+    transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+    border-color: var(--ccs-red);
+    outline: none;
+}
+
+button {
+    background: var(--ccs-red);
+    color: var(--ccs-white);
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0,33,71,0.08);
+    transition: background 0.2s, transform 0.2s;
+}
+
+button:hover {
+    background: var(--ccs-gold);
+    color: var(--ccs-blue);
+    transform: translateY(-2px) scale(1.03);
+}
+
+#login-error, #register-error {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--ccs-red);
+    font-weight: 600;
+    text-align: center;
+}
+
+#major-field {
+    margin-top: -0.5rem;
+    width: 100%;
+}
+
+#student-dashboard, #admin-dashboard {
+    background: var(--ccs-gold);
+    border-radius: var(--ccs-radius);
+    padding: 1.2rem;
+    box-shadow: var(--ccs-shadow);
+    color: var(--ccs-blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--ccs-blue);
+}
+
+#student-requirements, #admin-requirements-list, #students-list, #completed-req-list {
+    background: var(--ccs-white);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 1px 6px rgba(0,33,71,0.07);
+    color: var(--ccs-dark);
+    width: 100%;
+    border: 1px solid var(--ccs-gold);
+}
+
+#clearance-template {
+    margin-top: 1.2rem;
+    background: var(--ccs-gold);
+    border-radius: 10px;
+    padding: 1rem;
+    color: var(--ccs-blue);
+    width: 100%;
+    border: 1px solid var(--ccs-blue);
+    box-shadow: 0 1px 6px rgba(0,33,71,0.07);
+}
+
+#signature-template {
+    margin-top: 1rem;
+    background: var(--ccs-white);
+    border: 2px dashed var(--ccs-red);
+    border-radius: 10px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ccs-red);
+    width: 100%;
+    box-shadow: 0 1px 6px rgba(198,40,40,0.07);
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+    background: var(--ccs-blue);
+    color: var(--ccs-gold);
+    border-radius: 0 0 var(--ccs-radius) var(--ccs-radius);
+    margin-top: 2rem;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    box-shadow: 0 -2px 8px rgba(0,33,71,0.07);
+}
+
+@media (max-width: 600px) {
+    main {
+        max-width: 99vw;
+        padding: 1rem 0.5rem;
+    }
+    section {
+        padding: 1rem 0.5rem;
+    }
+    header {
+        font-size: 1.2rem;
+        padding: 1.2rem 0 0.7rem 0;
+    }
+}
