@@ -83,7 +83,7 @@ def init_db():
     
     # Insert single admin user
     cursor.execute('INSERT OR IGNORE INTO users (username, password, name, user_type) VALUES (?, ?, ?, ?)',
-                  ('ronronadmin', generate_password_hash('ronron1234'), 'System Administrator', 'admin'))
+                  ('ronronadmin', generate_password_hash('ronron1234'), 'Ron', 'admin'))
     
     conn.commit()
     conn.close()
@@ -486,6 +486,35 @@ def signature_template_api():
         return jsonify({'success': True, 'file_path': f'/static/uploads/{filename}'})
     
     return jsonify({'success': False, 'message': 'Invalid file type'})
+
+@app.route('/api/all-students')
+def all_students_api():
+    if 'user_id' not in session or session.get('user_type') != 'admin':
+        return jsonify({'success': False, 'message': 'Admin access required'}), 403
+    
+    conn = sqlite3.connect('clearance_system.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT username, name, course, year, major, section
+        FROM users 
+        WHERE user_type = 'student'
+        ORDER BY name
+    ''')
+    
+    students = []
+    for row in cursor.fetchall():
+        students.append({
+            'username': row[0],
+            'name': row[1],
+            'course': row[2],
+            'year': row[3],
+            'major': row[4] or '',
+            'section': row[5]
+        })
+    
+    conn.close()
+    return jsonify(students)
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}

@@ -21,6 +21,8 @@ function showTab(tabName) {
         loadAdminRequirements();
     } else if (tabName === 'students') {
         loadStudentsList();
+    } else if (tabName === 'student-list') {
+        loadAllStudentsList();
     } else if (tabName === 'clearances') {
         loadSubmittedClearances();
     }
@@ -308,6 +310,60 @@ function getCurrentFilters() {
         major: document.getElementById('filter-major').value,
         section: document.getElementById('filter-section').value
     };
+}
+
+async function loadAllStudentsList() {
+    try {
+        const response = await fetch('/api/all-students');
+        const students = await response.json();
+        
+        const container = document.getElementById('all-students-list');
+        container.innerHTML = '';
+        
+        if (students.length === 0) {
+            container.innerHTML = '<p class="no-data">No students registered yet.</p>';
+            return;
+        }
+        
+        // Create table
+        const table = document.createElement('table');
+        table.className = 'students-table';
+        
+        // Create header
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+            <tr>
+                <th>Name</th>
+                <th>Student Number</th>
+                <th>Course</th>
+                <th>Year Level</th>
+                <th>Major</th>
+                <th>Section</th>
+            </tr>
+        `;
+        table.appendChild(thead);
+        
+        // Create body
+        const tbody = document.createElement('tbody');
+        students.forEach(student => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${student.name}</strong></td>
+                <td>${student.username}</td>
+                <td>${student.course}</td>
+                <td>${student.year}</td>
+                <td>${student.major || 'N/A'}</td>
+                <td>${student.section}</td>
+            `;
+            tbody.appendChild(row);
+        });
+        
+        table.appendChild(tbody);
+        container.appendChild(table);
+        
+    } catch (error) {
+        console.error('Error loading all students:', error);
+    }
 }
 
 // Initialize when page loads
