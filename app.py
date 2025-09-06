@@ -404,10 +404,10 @@ def student_requirements_api():
             'completed': bool(row[2])
         })
     
-    # Check clearance status
-    cursor.execute('SELECT submitted FROM clearances WHERE student_id = ?', (student_id,))
-    clearance_row = cursor.fetchone()
-    clearance_submitted = bool(clearance_row[0]) if clearance_row else False
+    # Check clearance status - check if student has submitted clearance
+    cursor.execute('SELECT id FROM submitted_clearances WHERE student_id = ?', (student_id,))
+    submitted_clearance = cursor.fetchone()
+    clearance_submitted = bool(submitted_clearance)
     
     conn.close()
     
