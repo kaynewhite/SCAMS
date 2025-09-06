@@ -9,8 +9,8 @@ async function loadStudentRequirements() {
         container.innerHTML = '';
         
         if (!data.requirements || data.requirements.length === 0) {
-            container.innerHTML = '<p>No requirements posted yet.</p>';
-            updateClearanceStatus(false, 0, 0);
+            container.innerHTML = '';
+            updateClearanceStatus(false, 0, 0, true); // Pass true for no requirements
             return;
         }
         
@@ -43,10 +43,16 @@ async function loadStudentRequirements() {
     }
 }
 
-function updateClearanceStatus(submitted, completed, total) {
+function updateClearanceStatus(submitted, completed, total, noRequirements = false) {
     const statusDiv = document.getElementById('clearance-status');
     
-    if (submitted) {
+    if (noRequirements) {
+        statusDiv.className = 'clearance-status no-requirements';
+        statusDiv.innerHTML = `
+            <span>📋 No requirements have been posted yet.</span><br>
+            <span>Please check back later or contact the SBO office for updates.</span>
+        `;
+    } else if (submitted) {
         statusDiv.className = 'clearance-status completed';
         statusDiv.innerHTML = `
             <span>🎉 Congratulations! You have completed all requirements!</span><br>

@@ -70,3 +70,9 @@ A modern Flask-based web application for managing student clearance requirements
 - Added comprehensive error handling and user feedback
 - Improved security with proper password hashing and session management
 - Modern CSS grid layout for better organization and mobile responsiveness
+- Removed dark mode feature for simplified interface
+- Added undo submission functionality for individual students
+- Implemented clear all requirements button with automatic submission reversion
+- Enhanced student notification system with color-coded status messages
+- Added bulk CSV download for all completed clearances
+- Improved login interface with proper student number format guidance

@@ -64,6 +64,12 @@
     border: 2px solid var(--danger-red);
 }
 
+.clearance-status.no-requirements {
+    background: #fff3cd;
+    color: #856404;
+    border: 2px solid #ffc107;
+}
+
 /* Printable Clearance Template */
 .clearance-template {
     background: white;
